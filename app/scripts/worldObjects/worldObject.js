@@ -9,8 +9,9 @@ $(function () {
 	 * @constructor
 	 * Abstract World Object
 	 */
-	function WorldObject (params) {
+	function WorldObject (params, game) {
 		this.params = params;
+		this.game = game;
 		this.init && this.init.call(this, params);
 		this._parent = function F () {};
 		this.radius = 0;

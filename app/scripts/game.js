@@ -28,14 +28,23 @@ $(function () {
 		this.stateObjects = [];
 		this.users = {};
 		this.state = gameStates.starting;
-		this.renderer = new GameRenderer(FPS);
+		this.mousePosition = new App.Vector(0, 0);
+		this.mousePressed = null;
+		this.el = document.getElementById('game-area');
+		this.renderer = new GameRenderer(this, FPS);
+		this.whiteBallObjId = null;
 		this._events();
+
+		window.debug = this;
 
 		this.run('you', 'enemy');
 	}
 
 	Game.prototype._events = function () {
 		this.wsClient.on('message', this._onMessage.bind(this));
+		this.el.addEventListener('mousemove', this._onMouseMove.bind(this));
+		this.el.addEventListener('mousedown', this._onMouseDown.bind(this));
+		this.el.addEventListener('mouseup', this._onMouseUp.bind(this));
 	};
 
 	Game.prototype.run = function (user, enemyUser) {
@@ -59,7 +68,7 @@ $(function () {
 
 		for(var i=0; i< this.objects.length; i++) {
 			var obj = this.objects[i];
-			obj.step && obj.step();
+			obj.instance.step && obj.instance.step();
 		}
 
 		this.renderer.render(this.objects);
@@ -72,17 +81,17 @@ $(function () {
 	Game.prototype.createWorld = function () {
 		this.createWorldObject('Table', {});
 		this.createWorldObject('Cue', {});
-		this.createWorldObject('Ball', {number: 0, type: 'white', color: '#000000', x: 150, y: 50});
-		for(var i=1; i<=15; i++) {
-			if(i == 8) this.createWorldObject('Ball', {number: 8, type: 'black', color: '#000000', x: 50, y:0});
-			this.createWorldObject('Ball', {
-				number: i,
-				type: i < 8 ? 'full': 'striped',
-				color: '#ff0000',
-				x: 0,
-				y: 57*i
-			});
-		}
+		this.whiteBallObjId = this.createWorldObject('Ball', {number: 0, type: 'white', color: '#ffffff', x: 580, y: 225});
+//		for(var i=1; i<=15; i++) {
+//			if(i == 8) this.createWorldObject('Ball', {number: 8, type: 'black', color: '#000000', x: 50, y:0});
+//			this.createWorldObject('Ball', {
+//				number: i,
+//				type: i < 8 ? 'full': 'striped',
+//				color: '#ff0000',
+//				x: 180,
+//				y: 57*i
+//			});
+//		}
 	};
 
 	Game.prototype._onMessage = function (params) {
@@ -91,14 +100,32 @@ $(function () {
 		action && action.call(this, params.arguments);
 	};
 
+	Game.prototype._onMouseMove = function (e) {
+		this.mousePosition = new App.Vector(e.x, e.y);
+	};
+
+	Game.prototype._onMouseDown = function (e) {
+		this.mousePressed = new App.Vector(e.x, e.y);
+	};
+
+	Game.prototype._onMouseUp = function () {
+		this.mousePressed = null;
+	};
+
 	Game.prototype._onGameCreate = function (arguments) {
 		this.createWorldObject('Ball', {number: 8, color: 'black', type: 'full'});
 	};
 
+	Game.prototype.getWhiteBall = function () {
+		if (!this.whiteBallObjId) return null;
+		return this.objects[this.whiteBallObjId - 1].instance;
+	};
+
 	Game.prototype.createWorldObject = function (type, params) {
-		var obj = new objectRegistry[type](params);
+		var obj = new objectRegistry[type](params, this);
 		obj.objectId = ++this.objId;
 		this.objects.push({type: type, instance: obj});
+		return obj.objectId;
 	};
 
 	Game.prototype.deleteWorldObject = function (worldObject) {
@@ -121,14 +148,14 @@ $(function () {
 	 * Game Renderer; using it for render game world
 	 * @constructor
 	 */
-	function GameRenderer (fps) {
-		this.drawingControl = $('#game-area')[0];
-		this.drawingControl.width = 800;
-		this.drawingControl.height = 420;
+	function GameRenderer (game, fps) {
+		this.drawingControl = game.el;
+		this.drawingControl.width = 1200;
+		this.drawingControl.height = 1200;
 		this.canvas = this.drawingControl.getContext('2d');
 		this.SECOND = 1000;
 		this.fps = fps;
-		this.renderPeriod = 1000/this.fps;
+		this.renderPeriod = this.SECOND/this.fps;
 		this.renderTimeout = null;
 	};
 
@@ -150,15 +177,17 @@ $(function () {
 	};
 
 	GameRenderer.prototype.render = function (objects) {
+		this.canvas.clearRect(0, 0, this.drawingControl.width, this.drawingControl.height);
 		for(var i=0; i<objects.length; i++) {
 			var obj = objects[i];
 			var renderer = null;
-			if((renderer = App.World[obj.type]['Renderer']))
+			if((renderer = App.World[obj.type]['Renderer'])) {
+				this.canvas.beginPath();
 				renderer.render(obj.instance, this.canvas);
+				this.canvas.closePath();
+			}
 		}
 	};
-
-
 
 	GameRenderer.prototype.stopRenderCycle = function () {
 		clearTimeout(this.renderTimeout);

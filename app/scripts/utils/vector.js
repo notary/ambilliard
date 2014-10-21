@@ -99,4 +99,8 @@
 		this.y = Math.cos(angle) * (-length);
 		return this;
 	};
+
+	Vector.prototype.clone = function () {
+		return new Vector(this.x, this.y);
+	}
 }());

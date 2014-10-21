@@ -4,7 +4,7 @@ $(function () {
 	App.World.User = User;
 
 	function User (params) {
-		App.World.WorldObject.call(this, params);
+		App.World.WorldObject.apply(this, arguments);
 	};
 
 	User.prototype.init = function () {

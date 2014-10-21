@@ -14,19 +14,22 @@ $(function () {
 	 * Table Constructor
 	 */
 	function Table (params) {
-		App.World.WorldObject.call(this, params);
+		App.World.WorldObject.apply(this, arguments);
 		this.friction = FRICTION;
 		this.boards = {
-			top: {from: new App.Vector(20, 20), to: new App.Vector(120, 20)},
-			left: {from: new App.Vector(20, 20), to: new App.Vector(20, 70)},
-			right: {from: new App.Vector(120, 20), to: new App.Vector(120, 70)},
-			bottom: {from: new App.Vector(20, 70), to: new App.Vector(120, 70)}
+			top: {from: new App.Vector(134, 84), to: new App.Vector(678, 84)},
+			left: {from: new App.Vector(114, 102), to: new App.Vector(114, 350)},
+			right: {from: new App.Vector(701, 102), to: new App.Vector(701, 350)},
+			bottom: {from: new App.Vector(134, 372), to: new App.Vector(678, 372)}
 		};
 	};
 
+	Table.prototype = Object.create(App.World.WorldObject);
+	Table.constructor = Table;
+
 	Table.prototype.collision = function (worldObj) {
 		for(var board in this.boards) {
-			if(this._distanceToBoard(board, worldObj.vec) <= worldObj.radius + this.radius) return true;
+			if(this._distanceToBoard(this.boards[board], worldObj.vec) <= worldObj.radius + this.radius) return true;
 		}
 		return false;
 	};
@@ -38,8 +41,10 @@ $(function () {
 		return vector ? vec.distanceTo(vector) : 0;
 	};
 
-	Table.prototype = Object.create(App.World.WorldObject);
-	Table.constructor = Table;
+	Table.prototype.withFriction = function (speed) {
+	//	return speed.set(Math.floor(speed.x * this.friction), Math.floor(speed.y * this.friction));
+	};
+
 
 	var image = null;
 	App.World.Table.Renderer = {
