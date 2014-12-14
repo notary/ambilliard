@@ -90,7 +90,9 @@
 	};
 
 	Vector.prototype.vectorTo = function (v) {
-		return new Vector(v.x - this.x, v.y - this.y);
+		var vec =  new Vector(v.x - this.x, v.y - this.y);
+		if(vec.x == 0) vec.x = 1;
+		return vec;
 	};
 
 	Vector.prototype.rotate = function (angle) {

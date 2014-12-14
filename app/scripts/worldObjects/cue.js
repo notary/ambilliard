@@ -34,12 +34,11 @@ $(function () {
 		this.tail =  this.game.mousePosition;
 		this.pressed = this.game.mousePressed;
 		if(this.pressed) {
-			this.isLeft = this.vec.x > this.pressed.x;
 			this.isShoot = true;
 		}
 		if(!this.pressed && this.isShoot) {
 			this.isShoot = false;
-			whiteBall.strike(this.speed, this.vec.angleTo(this.tail) - Math.PI/2);
+			whiteBall.strike(this.speed, this.angle);
 		}
 	};
 
@@ -53,19 +52,21 @@ $(function () {
 			ctx.save();
 			var pressedShift = new App.Vector(0, 0);
 			if(cue.pressed) {
-				if((cue.isLeft && cue.tail.x > cue.pressed.x) || (!cue.isLeft && cue.tail.x < cue.pressed.x))
-					cue.tail.x = cue.pressed.x;
-				pressedShift.x = Math.abs(cue.tail.x - cue.pressed.x);
-				pressedShift.x = pressedShift.x > cue.maxPower ? cue.maxPower : pressedShift.x;
-				pressedShift.x = -pressedShift.x;
-				cue.speed.x = pressedShift.x;
+				var angle = cue.vec.vectorTo(cue.tail);
+				cue.angle = angle.clone();
+				cue.angle.normalize();
+				var speed = angle;
+				cue.speed = speed.length() > cue.maxPower ? (speed.normalize() && speed.add({x: 50, y: 50})) : speed;
+
+				pressedShift.y = Math.abs(cue.tail.y - cue.pressed.y);
+				pressedShift.y = pressedShift.y > cue.maxPower ? cue.maxPower : pressedShift.y;
 			}
 
 			ctx.translate(cue.vec.x, cue.vec.y);
-			//console.log(cue.vec.angleTo(cue.tail), cue.tail, cue);
 			ctx.rotate(cue.vec.angleTo(cue.tail));
 			ctx.translate(-cue.vec.x, -cue.vec.y);
 			ctx.drawImage(this.image, cue.vec.x - this.image.width/2 - pressedShift.x, cue.vec.y - this.image.height/2 - pressedShift.y); //center of image - white ball
+			console.log(cue.tail.x, cue.tail.y);
 			ctx.restore();
 		}
 	};

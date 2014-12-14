@@ -42,7 +42,11 @@ $(function () {
 	};
 
 	Table.prototype.withFriction = function (speed) {
-	//	return speed.set(Math.floor(speed.x * this.friction), Math.floor(speed.y * this.friction));
+		if(!speed) return null;
+		var minSpeed = 0.0001;
+		speed.set(Math.round((speed.x * this.friction)/100), Math.round((speed.y * this.friction)/100));  //div 100 for test
+		if(Math.abs(speed.x) < minSpeed || Math.abs(speed.y) < minSpeed) return null;
+		return speed;
 	};
 
 

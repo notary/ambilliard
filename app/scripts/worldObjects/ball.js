@@ -15,7 +15,7 @@ $(function () {
 	function Ball (params) {
 		App.World.WorldObject.apply(this, arguments);
 		this.radius = Ball.RADIUS;
-		this.speed = new App.Vector(0, 0);
+		this.speed = null;
 		this.vec = new App.Vector(params.x, params.y);
 	};
 
@@ -28,18 +28,13 @@ $(function () {
 	};
 
 	Ball.prototype.strike = function (speed, angle) {
-		angle = {
-			x: 1,
-			y: 1
-		};
-		//this.vec.rotate(angle);
-		this.speed = {x: speed * angle.x, y: speed * angle.y};
+		this.speed = new App.Vector(speed.x * angle.x, speed.y * angle.y);
 	};
 
 	Ball.prototype.move = function (friction) {
-	//	this.speed = {x: Math.floor(this.speed.x * friction), y: Math.floor(this.speed.y * friction)};
-	//	this.params.x = this.x += this.speed.x;
-	//	this.params.y = this.y += this.speed.y;
+		if(!this.speed || !this.speed.x) return;
+		this.params.x = this.x += this.speed.x;
+		this.params.y = this.y += this.speed.y;
 	};
 
 	Ball.prototype.step = function () {
