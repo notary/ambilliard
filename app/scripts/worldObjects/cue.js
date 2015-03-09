@@ -30,6 +30,7 @@ $(function () {
 
 	Cue.prototype.step = function () {
 		var whiteBall = this.game.getWhiteBall();
+		if(whiteBall.isMoves()) return;
 		this.vec = whiteBall.vec.clone() || new App.Vector(380, 180);
 		this.tail =  this.game.mousePosition;
 		this.pressed = this.game.mousePressed;
@@ -49,6 +50,7 @@ $(function () {
 		},
 
 		render: function (cue, ctx) {
+			if(cue.game.getWhiteBall().isMoves()) return;
 			ctx.save();
 			var pressedShift = new App.Vector(0, 0);
 			if(cue.pressed) {
@@ -66,7 +68,6 @@ $(function () {
 			ctx.rotate(cue.vec.angleTo(cue.tail));
 			ctx.translate(-cue.vec.x, -cue.vec.y);
 			ctx.drawImage(this.image, cue.vec.x - this.image.width/2 - pressedShift.x, cue.vec.y - this.image.height/2 - pressedShift.y); //center of image - white ball
-			console.log(cue.tail.x, cue.tail.y);
 			ctx.restore();
 		}
 	};

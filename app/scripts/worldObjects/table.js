@@ -7,7 +7,7 @@ $(function () {
 	var HEIGHT = 1270; // mm
 	var MIDDLE_LOOSE_RADIUS = 130; // mm
 	var ANGLE_LOOSE_RADIUS = 115; // mm
-	var FRICTION = 0.2;
+	var FRICTION = 2;
 	/**
 	 * @param params
 	 * @constructor
@@ -29,23 +29,19 @@ $(function () {
 
 	Table.prototype.collision = function (worldObj) {
 		for(var board in this.boards) {
-			if(this._distanceToBoard(this.boards[board], worldObj.vec) <= worldObj.radius + this.radius) return true;
+			var isCollision = App.Physics.instance.lineCollision(this.boards[board], worldObj.vec, worldObj.radius + this.radius);
+			if(isCollision)
+				return {board: this.boards[board]};
 		}
 		return false;
 	};
 
-	Table.prototype._distanceToBoard = function (board, vec) {
-		var vector = null;
-		if(board.from.x == board.to.x) vector = new App.Vector(board.to.x, vec.y);
-		if(board.from.y == board.to.y) vector = new App.Vector(vec.x, board.to.y);
-		return vector ? vec.distanceTo(vector) : 0;
-	};
 
 	Table.prototype.withFriction = function (speed) {
 		if(!speed) return null;
-		var minSpeed = 0.0001;
-		speed.set(Math.round((speed.x * this.friction)/100), Math.round((speed.y * this.friction)/100));  //div 100 for test
-		if(Math.abs(speed.x) < minSpeed || Math.abs(speed.y) < minSpeed) return null;
+		var minSpeed = 0.001;
+		speed.set((speed.x - (speed.x * (this.friction / 60))), (speed.y - (speed.y * (this.friction / 60))));
+		if(speed.length() < minSpeed) return (speed = null);
 		return speed;
 	};
 

@@ -91,7 +91,7 @@
 
 	Vector.prototype.vectorTo = function (v) {
 		var vec =  new Vector(v.x - this.x, v.y - this.y);
-		if(vec.x == 0) vec.x = 1;
+		if(vec.x == 0) vec.x = 0.00001;
 		return vec;
 	};
 
