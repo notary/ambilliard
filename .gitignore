@@ -1,5 +1,6 @@
 *.iml
 .idea
+*.sln
 node_modules
 app/bower_components
 app/.htaccess

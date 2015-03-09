@@ -34,6 +34,7 @@ $(function () {
 		this.renderer = new GameRenderer(this, FPS);
 		this.whiteBallObjId = null;
 		this._events();
+		this.FPS = FPS;
 
 		window.debug = this;
 
@@ -41,7 +42,7 @@ $(function () {
 	}
 
 	Game.prototype._events = function () {
-		this.wsClient.on('message', this._onMessage.bind(this));
+		//this.wsClient.on('message', this._onMessage.bind(this));
 		this.el.addEventListener('mousemove', this._onMouseMove.bind(this));
 		this.el.addEventListener('mousedown', this._onMouseDown.bind(this));
 		this.el.addEventListener('mouseup', this._onMouseUp.bind(this));

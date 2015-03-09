@@ -42,6 +42,10 @@
 		return this;
 	};
 
+	Vector.prototype.vMultiply = function (vec) {
+		return this.x * vec.y - this.y * vec.x;
+	};
+
 	Vector.prototype.div = function (vec) {
 		this.x /= vec.x;
 		this.y /= vec.y;

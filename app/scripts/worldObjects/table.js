@@ -17,10 +17,10 @@ $(function () {
 		App.World.WorldObject.apply(this, arguments);
 		this.friction = FRICTION;
 		this.boards = {
-			top: {from: new App.Vector(134, 84), to: new App.Vector(678, 84)},
-			left: {from: new App.Vector(114, 102), to: new App.Vector(114, 350)},
-			right: {from: new App.Vector(701, 102), to: new App.Vector(701, 350)},
-			bottom: {from: new App.Vector(134, 372), to: new App.Vector(678, 372)}
+			top: new App.Line(new App.Vector(134, 84), new App.Vector(678, 84)),
+			left: new App.Line(new App.Vector(114, 102), new App.Vector(114, 350)),
+			right: new App.Line(new App.Vector(701, 102), new App.Vector(701, 350)),
+			bottom: new App.Line(new App.Vector(134, 372), new App.Vector(678, 372))
 		};
 	};
 
@@ -40,8 +40,9 @@ $(function () {
 	Table.prototype.withFriction = function (speed) {
 		if(!speed) return null;
 		var minSpeed = 0.001;
-		speed.set((speed.x - (speed.x * (this.friction / 60))), (speed.y - (speed.y * (this.friction / 60))));
-		if(speed.length() < minSpeed) return (speed = null);
+		var friction = this.friction / this.game.FPS;
+		speed.set(speed.x - speed.x * friction, speed.y - speed.y * friction);
+		if(speed.length() < minSpeed) speed = null;
 		return speed;
 	};
 
