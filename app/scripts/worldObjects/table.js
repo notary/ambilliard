@@ -28,11 +28,10 @@ $(function () {
 	Table.constructor = Table;
 
 	Table.prototype.collision = function (worldObj) {
-		var boards = this.boards;
-		for (var board in boards) {
-			var isCollision = App.Physics.instance.lineCollision(this.boards[board], worldObj.vec, worldObj.radius + this.radius);
+		for (var board in this.boards) {
+			var isCollision = App.Physics.instance.collision(this.boards[board], worldObj.vec, worldObj.radius + this.radius);
 			if(isCollision)
-				return {board: this.boards[board]};
+				return this.boards[board];
 		}
 		return false;
 	};

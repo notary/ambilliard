@@ -24,8 +24,8 @@ $(function () {
 	Ball.constructor = Ball;
 
 	Ball.prototype.collision = function (worldObj) {
-		var dist = this.vec.distanceTo(worldObj.vec);
-		return dist <= this.radius + worldObj.radius;
+		if (App.Physics.instance.collision(this, worldObj, this.radius, worldObj.radius)) return this;
+		return false;
 	};
 
 	Ball.prototype.strike = function (speed, angle) {
@@ -55,22 +55,13 @@ $(function () {
 			if(objects[obj].type == 'Table') {
 				this.speed = objects[obj].instance.withFriction(this.speed);
 			}
-			var collision = objects[obj].instance.collision(this);
-			if(!collision) continue;
+			var collisionObj = objects[obj].instance.collision(this);
+			if (!collisionObj) continue;
 			if(objects[obj].type == 'Table') {
-				this.speed = App.Physics.instance.lineBound(collision.board, this.speed);
+				this.speed = App.Physics.instance.lineBound(collisionObj, this).speed;
 			} else {
-				if(!this.speed) continue;
-				var vec = this.vec.clone();
-				vec.add(this.speed.x, this.speed.y);
-				vec.normalize();
-				var vecToBall = this.vec.vectorTo(objects[obj].instance.vec);
-				vec = vec.vectorTo(vecToBall).negative();
-				vecToBall.normalize();
-				objects[obj].instance.speed = new App.Vector(
-					this.speed.length() * vecToBall.x - WEIGHT,  //use friction
-					this.speed.length() * vecToBall.y - WEIGHT
-				);
+				App.Physics.instance.bound(collisionObj, this);
+				collisionObj.move();
 			}
 		}
 		this.move();

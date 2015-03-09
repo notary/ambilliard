@@ -82,17 +82,17 @@ $(function () {
 	Game.prototype.createWorld = function () {
 		this.createWorldObject('Table', {});
 		this.createWorldObject('Cue', {});
-		this.whiteBallObjId = this.createWorldObject('Ball', {number: 0, type: 'white', color: '#ffffff', x: 580, y: 225});
-//		for(var i=1; i<=15; i++) {
-//			if(i == 8) this.createWorldObject('Ball', {number: 8, type: 'black', color: '#000000', x: 50, y:0});
-//			this.createWorldObject('Ball', {
-//				number: i,
-//				type: i < 8 ? 'full': 'striped',
-//				color: '#ff0000',
-//				x: 180,
-//				y: 57*i
-//			});
-//		}
+		this.whiteBallObjId = this.createWorldObject('Ball', { number: 0, type: 'white', color: '#ffffff', x: 580, y: 225 });
+		for(var i=1; i<=1; i++) {
+			if(i == 8) this.createWorldObject('Ball', {number: 8, type: 'black', color: '#000000', x: 50, y:0});
+			this.createWorldObject('Ball', {
+				number: i,
+				type: i < 8 ? 'full': 'striped',
+				color: '#ff0000',
+				x: 400,
+				y: 225
+			});
+		}
 	};
 
 	Game.prototype._onMessage = function (params) {

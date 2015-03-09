@@ -17,7 +17,7 @@ $(function () {
 		this.vec = new App.Vector(params.x, params.y);
 		this.radius = RADIUS;
 		this.speed = new App.Vector(0, 0);
-		this.maxPower = 30;
+		this.maxPower = 20;
 		this.isShoot = false;
 	};
 
@@ -53,15 +53,21 @@ $(function () {
 			if(cue.game.getWhiteBall().isMoves()) return;
 			ctx.save();
 			var pressedShift = new App.Vector(0, 0);
-			if(cue.pressed) {
-				var angle = cue.vec.vectorTo(cue.tail);
-				cue.angle = angle.clone();
-				cue.angle.normalize();
-				var speed = angle;
-				cue.speed = speed.length() > cue.maxPower ? (speed.normalize() && speed.add({x: 50, y: 50})) : speed;
-
-				pressedShift.y = Math.abs(cue.tail.y - cue.pressed.y);
-				pressedShift.y = pressedShift.y > cue.maxPower ? cue.maxPower : pressedShift.y;
+			if (cue.pressed) {
+				var power = 0;
+				var angleShoot = cue.vec.vectorTo(cue.tail);
+				angleShoot.normalize();
+				var pWay = cue.vec.distanceTo(cue.tail);
+				var pKeep = cue.vec.distanceTo(cue.pressed);
+				var delta = pWay - pKeep;
+				if (delta < 0) {
+					cue.tail = cue.pressed.clone();
+				} else {
+					power = delta <= cue.maxPower ? delta : cue.maxPower;
+				}
+				pressedShift.y = power;
+				cue.angle = angleShoot.clone();
+				cue.speed = angleShoot.set(power, power);
 			}
 
 			ctx.translate(cue.vec.x, cue.vec.y);

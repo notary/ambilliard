@@ -13,11 +13,13 @@
 			this.x = x;
 			this.y = y;
 		}
+		return this;
 	};
 
 	Vector.prototype.clear = function () {
 		this.x = 0.0;
 		this.y = 0.0;
+		return this;
 	};
 
 	Vector.prototype.negative = function () {
