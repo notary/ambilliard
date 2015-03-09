@@ -13,7 +13,7 @@
 	Physics.prototype.lineCollision = function (line, p, radius) {
 		radius = radius || 0;
 		var ort = line.ort();
-		var distance = (ort.x * p.y + ort.y * p.x) - (line.start.vMultiply(line.end) / line.length());
+		var distance = (ort.x * p.y + ort.y * p.x) - Math.abs(line.start.vMultiply(line.end) / line.length());
 		return Math.abs(distance) <= radius;
 	};
 

@@ -17,7 +17,7 @@ $(function () {
 		this.vec = new App.Vector(params.x, params.y);
 		this.radius = RADIUS;
 		this.speed = new App.Vector(0, 0);
-		this.maxPower = 50;
+		this.maxPower = 30;
 		this.isShoot = false;
 	};
 
