@@ -40,16 +40,34 @@
 			return this.lineBound(p1, p2);
 
 		if (!p2.speed) return;
+
 		var angleV = p2.vec.vectorTo(p1.vec);
 		var angle = angleV.angle();
-		var distance = angleV.normalize();
-		distance = p1.radius + p2.radius - distance + 1;
-		var speed = p2.speed.length();
-		p1.vec.add({ x: angleV.x * distance, y: angleV.y * distance });
-		p1.speed = angleV.multiply({ x: speed, y: speed });
+		var fi = Math.PI/2 - angle;
+		var baseSpeed = p2.speed.length();
+		var speed1 = Math.abs(baseSpeed * Math.sin(angle/2));
+		var speed2 = Math.abs(baseSpeed * Math.cos(angle/2));
 
-		angle = Math.abs(Math.cos(angle));
-		p2.speed.multiply({x: angle, y: angle });
+
+		angleV.normalize();
+		p1.speed = angleV.multiply({x: speed1, y: speed1});
+
+		var v = p1.vec.vectorTo(p2.vec);
+		v.rotate(fi);
+		v.normalize();
+		p2.speed = v.multiply({x: speed2, y: speed2});
+
+//		if (!p2.speed) return;
+//		var angleV = p2.vec.vectorTo(p1.vec);
+//		var angle = angleV.angle();
+//		var distance = angleV.normalize();
+//		distance = p1.radius + p2.radius - distance + 1;
+//		var speed = p2.speed.length();
+//		p1.vec.add({ x: angleV.x * distance, y: angleV.y * distance });
+//		p1.speed = angleV.multiply({ x: speed, y: speed });
+//
+//		angle = Math.abs(Math.cos(angle));
+//		p2.speed.multiply({x: angle, y: angle });
 	};
 
 	Physics.prototype._isPositive = function (value) {

@@ -17,6 +17,7 @@ $(function () {
 		this.radius = Ball.RADIUS;
 		this.speed = null;
 		this.state = 'sleep';
+		this.weight = WEIGHT;
 		this.vec = new App.Vector(params.x, params.y);
 	};
 
