@@ -21,7 +21,7 @@ $(function () {
 		this.vec = new App.Vector(params.x, params.y);
 	};
 
-	Ball.prototype = Object.create(App.World.WorldObject);
+	Ball.prototype = Object.create(App.World.WorldObject.prototype);
 	Ball.constructor = Ball;
 
 	Ball.prototype.collision = function (worldObj) {
@@ -58,12 +58,7 @@ $(function () {
 			}
 			var collisionObj = objects[obj].instance.collision(this);
 			if (!collisionObj) continue;
-			if(objects[obj].type == 'Table') {
-				this.speed = App.Physics.instance.lineBound(collisionObj, this).speed;
-			} else {
-				App.Physics.instance.bound(collisionObj, this);
-				collisionObj.move();
-			}
+			App.Physics.instance.bound(collisionObj, this);
 		}
 		this.move();
 	};

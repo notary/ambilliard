@@ -24,7 +24,7 @@ $(function () {
 		};
 	};
 
-	Table.prototype = Object.create(App.World.WorldObject);
+	Table.prototype = Object.create(App.World.WorldObject.prototype);
 	Table.constructor = Table;
 
 	Table.prototype.collision = function (worldObj) {

@@ -11,6 +11,6 @@ $(function () {
 		this.isActive = false;
 	};
 
-	User.prototype = Object.create(App.World.WorldObject);
+	User.prototype = Object.create(App.World.WorldObject.prototype);
 	User.constructor = User;
 });

@@ -21,7 +21,7 @@ $(function () {
 		this.isShoot = false;
 	};
 
-	Cue.prototype = Object.create(App.World.WorldObject);
+	Cue.prototype = Object.create(App.World.WorldObject.prototype);
 	Cue.constructor = Cue;
 
 	Cue.prototype.collision = function () {

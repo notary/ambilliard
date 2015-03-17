@@ -10,7 +10,19 @@
 
 		var p = p2.vec.clone();
 		p = p.sub(p1.vec);
-		return p.length() <= (radius1 + radius2);
+
+		return p.length() < (radius1 + radius2);
+	};
+
+	Physics.prototype._moving = function (p1, p2) {
+		var d = p1.radius + p2.radius;
+		var v = p2.vec.vectorTo(p1.vec);
+		var rd = Math.abs(v.length() - d) + 1;
+		if(rd === d) return;
+		v = v.negative();
+		v.normalize();
+		v.multiply({x: rd, y: rd});
+		p2.vec.add(v);
 	};
 
 	Physics.prototype.lineCollision = function (line, p, radius) {
@@ -23,11 +35,20 @@
 	Physics.prototype.lineBound = function (line, p) {
 		var mult = 1;
 		if (!p || !p.speed) return;
+		var movePoint = {
+			speed: null,
+			radius: 0,
+			vec: new App.Vector(0, 0)
+		};
 		if (line.start.x == line.end.x) {
+			movePoint.vec.add({x: line.start.x, y: p.vec.y});
+			this._moving(movePoint, p);
 			mult = this._isPositive(p.speed.x) ? -1 : 1;
 			p.vec.x = line.start.x + mult*p.radius;
 			p.speed.x *= -1;
 		} else if (line.start.y == line.end.y) {
+			movePoint.vec.add({x: p.vec.x, y: line.start.y});
+			this._moving(movePoint, p);
 			mult = this._isPositive(p.speed.y) ? -1 : 1;
 			p.vec.y = line.start.y + mult*p.radius;
 			p.speed.y *= -1;
@@ -40,34 +61,37 @@
 			return this.lineBound(p1, p2);
 
 		if (!p2.speed) return;
+		if (!p1.speed) {
+			p1.speed = {
+				length: function () {return 0;}
+			};
+		}
+		var speed = p1.speed.length() + p2.speed.length();
 
-		var angleV = p2.vec.vectorTo(p1.vec);
-		var angle = angleV.angle();
-		var fi = Math.PI/2 - angle;
-		var baseSpeed = p2.speed.length();
-		var speed1 = Math.abs(baseSpeed * Math.sin(angle/2));
-		var speed2 = Math.abs(baseSpeed * Math.cos(angle/2));
+		this._moving(p1, p2);
 
+		var vtoNext = p2.vec.clone().add(p2.speed);
+		var fi = vtoNext.angleTo(p1.vec);
+		var angle1 = (Math.PI - fi)/2;
+		var angle2 = Math.atan(Math.sin(fi)/(2*Math.cos(fi)));
+		if(angle1 < 0) {
+			//angle1 = angle1 + Math.PI;
+			//angle2 = angle2;
+		}		
+		var baseSpeed = speed;
+		var speed1 = Math.abs(baseSpeed * Math.sin(fi/2));
+		var speed2 = baseSpeed - speed1;
 
-		angleV.normalize();
-		p1.speed = angleV.multiply({x: speed1, y: speed1});
+		var v1 = vtoNext.clone();
+		v1.rotate(angle1);
+		v1.normalize();
+		p1.speed = v1.multiply({x: speed1, y: speed1});
+		p1.speed = p1.speed.negative();
 
-		var v = p1.vec.vectorTo(p2.vec);
-		v.rotate(fi);
-		v.normalize();
-		p2.speed = v.multiply({x: speed2, y: speed2});
-
-//		if (!p2.speed) return;
-//		var angleV = p2.vec.vectorTo(p1.vec);
-//		var angle = angleV.angle();
-//		var distance = angleV.normalize();
-//		distance = p1.radius + p2.radius - distance + 1;
-//		var speed = p2.speed.length();
-//		p1.vec.add({ x: angleV.x * distance, y: angleV.y * distance });
-//		p1.speed = angleV.multiply({ x: speed, y: speed });
-//
-//		angle = Math.abs(Math.cos(angle));
-//		p2.speed.multiply({x: angle, y: angle });
+		vtoNext.rotate(angle2);
+		vtoNext.normalize();
+		p2.speed = vtoNext.multiply({x: speed2, y: speed2});
+		p2.speed = p2.speed.negative();
 	};
 
 	Physics.prototype._isPositive = function (value) {
